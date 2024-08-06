@@ -57,6 +57,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Giro_Iz_Pin GPIO_PIN_1
+#define Giro_Iz_GPIO_Port GPIOA
+#define Giro_Iz_EXTI_IRQn EXTI1_IRQn
+#define Giro_De_Pin GPIO_PIN_4
+#define Giro_De_GPIO_Port GPIOA
+#define Giro_De_EXTI_IRQn EXTI4_IRQn
+#define Luz_De_Pin GPIO_PIN_7
+#define Luz_De_GPIO_Port GPIOA
+#define Luz_Iz_Pin GPIO_PIN_6
+#define Luz_Iz_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
