@@ -108,6 +108,23 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  if (Iz_pressed != 0) {
+	  		  Iz_pressed = 0; // Limpiar banderas para que no ejecute por siempre
+	  		  for(uint8_t i = 0; i <= 4; i++){
+	  			  HAL_GPIO_TogglePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin);
+	  			  HAL_Delay(250);
+	  		  }
+	  		  HAL_GPIO_WritePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin, 1);
+	  	  }
+
+	  	  if (De_pressed !=0){
+	  		  De_pressed = 0;
+	  		  for(uint8_t j = 0; j <= 4; j++){
+	  			  HAL_GPIO_TogglePin(Luz_De_GPIO_Port, Luz_De_Pin);
+	  			  HAL_Delay(250);
+	  		  }
+	  		  HAL_GPIO_WritePin(Luz_De_GPIO_Port, Luz_De_Pin, 1);
+	  	  }
   }
   /* USER CODE END 3 */
 }
@@ -181,6 +198,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = Giro_Iz_Pin|Giro_De_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA2 PA3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Luz_De_Pin */
