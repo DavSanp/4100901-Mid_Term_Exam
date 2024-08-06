@@ -25,3 +25,5 @@ Implemente un sistema de señales direccionales como se especifica.
 6. Si un botón de giro se presiona 2 o mas veces durante 500ms: la luz del lado correspondiente parpadea indefinidamente.
 7. Si un botón de giro se presiona y la luz del otro lado esta activa: se desactiva la luz del otro lado.
 8. La frecuencia de parpadeo de las luces debe ser de 2Hz.
+
+Basándonos en el ejercicio realizado en el simulacro, se realizaron algunas modificaciones y se añadieron nuevas características para un funcionamiento adicional. Este se centra en un sistema de direccionales similar al ejercicio anterior. Sin embargo, en esta ocasión se agregó una función donde, si se presiona dos veces o durante un tiempo determinado, las luces quedan parpadeando indefinidamente.

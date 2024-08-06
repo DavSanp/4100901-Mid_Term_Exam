@@ -42,13 +42,17 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t Iz_pressed = 0;
-uint8_t De_pressed = 0;
+uint8_t Iz_pressed = 0;// Variable para rastrear si el botón izquierdo fue presionado
+uint8_t De_pressed = 0;// Variable para rastrear si el botón derecho fue presionado
+uint32_t last_Iz_press = 0;  // Tiempo de la última presión del botón izquierdo
+uint32_t last_De_press = 0;  // Tiempo de la última presión del botón derecho
+uint8_t Iz_blink = 0;  // Flag para indicar si el LED izquierdo debe parpadear
+uint8_t De_blink = 0;  // Flag para indicar si el LED derecho debe parpadear
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
+ void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -57,15 +61,45 @@ static void MX_GPIO_Init(void);
 /* USER CODE BEGIN 0 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
- if(GPIO_Pin == Giro_Iz_Pin){
-	 HAL_GPIO_TogglePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin);
-	 Iz_pressed = 1;
- }
+    uint32_t current_time = HAL_GetTick();  // Obtiene el tiempo actual en milisegundos
 
- if(GPIO_Pin == Giro_De_Pin){
-	 HAL_GPIO_TogglePin(Luz_De_GPIO_Port, Luz_De_Pin);
-	 De_pressed = 1;
- }
+    if(GPIO_Pin == Giro_Iz_Pin){  // Si se presionó el botón izquierdo
+        if(current_time - last_Iz_press < 500){  // Si han pasado menos de 500ms desde la última presión
+            Iz_pressed++;  // Incrementa el contador de presiones
+            if(Iz_pressed >= 2){  // Si se ha presionado 2 o más veces
+                Iz_blink = 1;  // Activa el parpadeo del LED izquierdo
+                De_blink = 0;  // Desactiva el parpadeo del LED derecho
+            }
+        } else {
+            Iz_pressed = 1;  // Reinicia el contador si han pasado más de 500ms
+        }
+        last_Iz_press = current_time;  // Actualiza el tiempo de la última presión
+
+        // Si el LED derecho está encendido, lo apaga
+        if(HAL_GPIO_ReadPin(Luz_De_GPIO_Port, Luz_De_Pin) == GPIO_PIN_SET){
+            HAL_GPIO_WritePin(Luz_De_GPIO_Port, Luz_De_Pin, GPIO_PIN_RESET);
+            De_blink = 0;
+        }
+    }
+
+    if(GPIO_Pin == Giro_De_Pin){  // Si se presionó el botón derecho
+        // El código es similar al del botón izquierdo, pero para el lado derecho
+        if(current_time - last_De_press < 500){
+        	De_pressed++;
+            if(De_pressed >= 2){
+            	De_blink = 1;
+                Iz_blink = 0;
+            }
+        } else {
+        	De_pressed = 1;
+        }
+        last_De_press = current_time;
+
+        if(HAL_GPIO_ReadPin(Luz_Iz_GPIO_Port, Luz_Iz_Pin) == GPIO_PIN_SET){
+            HAL_GPIO_WritePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin, GPIO_PIN_RESET);
+            Iz_blink = 0;
+        }
+    }
 }
 /* USER CODE END 0 */
 
@@ -76,6 +110,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	 HAL_Init();  // Inicializa la capa HAL (Hardware Abstraction Layer)
+	  SystemClock_Config();  // Configura el reloj del sistema
+	  MX_GPIO_Init();  // Inicializa los pines GPIO
 
   /* USER CODE END 1 */
 
@@ -108,24 +145,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if (Iz_pressed != 0) {
-	  		  Iz_pressed = 0; // Limpiar banderas para que no ejecute por siempre
-	  		  for(uint8_t i = 0; i <= 4; i++){
-	  			  HAL_GPIO_TogglePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin);
-	  			  HAL_Delay(250);
-	  		  }
-	  		  HAL_GPIO_WritePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin, 1);
-	  	  }
+	  if (Iz_blink) {  // Si el LED izquierdo debe parpadear
+	  	        HAL_GPIO_TogglePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin);  // Cambia el estado del LED izquierdo
+	  	        HAL_Delay(500);  // Espera 500ms
+	  	    }
 
-	  	  if (De_pressed !=0){
-	  		  De_pressed = 0;
-	  		  for(uint8_t j = 0; j <= 4; j++){
-	  			  HAL_GPIO_TogglePin(Luz_De_GPIO_Port, Luz_De_Pin);
-	  			  HAL_Delay(250);
-	  		  }
-	  		  HAL_GPIO_WritePin(Luz_De_GPIO_Port, Luz_De_Pin, 1);
-	  	  }
-  }
+	  	    if (De_blink) {  // Si el LED derecho debe parpadear
+	  	        HAL_GPIO_TogglePin(Luz_De_GPIO_Port, Luz_De_Pin);  // Cambia el estado del LED derecho
+	  	        HAL_Delay(500);  // Espera 500ms
+	  	    }
   /* USER CODE END 3 */
 }
 
@@ -246,10 +274,8 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
-  while (1)
-  {
-  }
   /* USER CODE END Error_Handler_Debug */
+	}
 }
 
 #ifdef  USE_FULL_ASSERT
