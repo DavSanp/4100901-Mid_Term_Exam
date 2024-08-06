@@ -52,7 +52,7 @@ uint8_t De_blink = 0;  // Flag para indicar si el LED derecho debe parpadear
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
- void MX_GPIO_Init(void);
+static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -220,7 +220,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(Luz_De_GPIO_Port, Luz_De_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|Luz_Iz_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : Giro_Iz_Pin Giro_De_Pin */
   GPIO_InitStruct.Pin = Giro_Iz_Pin|Giro_De_Pin;
@@ -243,12 +243,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(Luz_De_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Luz_Iz_Pin */
-  GPIO_InitStruct.Pin = Luz_Iz_Pin;
+  /*Configure GPIO pins : PB1 Luz_Iz_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|Luz_Iz_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Luz_Iz_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
@@ -275,7 +275,6 @@ void Error_Handler(void)
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   /* USER CODE END Error_Handler_Debug */
-	}
 }
 
 #ifdef  USE_FULL_ASSERT
