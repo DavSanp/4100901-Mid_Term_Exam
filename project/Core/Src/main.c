@@ -55,7 +55,18 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+ if(GPIO_Pin == Giro_Iz_Pin){
+	 HAL_GPIO_TogglePin(Luz_Iz_GPIO_Port, Luz_Iz_Pin);
+	 Iz_pressed = 1;
+ }
 
+ if(GPIO_Pin == Giro_De_Pin){
+	 HAL_GPIO_TogglePin(Luz_De_GPIO_Port, Luz_De_Pin);
+	 De_pressed = 1;
+ }
+}
 /* USER CODE END 0 */
 
 /**
